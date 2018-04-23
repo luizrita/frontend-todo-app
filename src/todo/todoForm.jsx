@@ -5,10 +5,14 @@ import IconButton from '../template/iconButton'
 export default props => (
     <div role='form' className='todoForm'>
         <Grid cols='12 9 10'>
-            <input id='description' className='form-control' placeholder='Adicione uma tarefa' />
+            <input id='description'
+                className='form-control'
+                placeholder='Adicione uma tarefa'
+                onChange={props.handelChange}
+                value={props.description} />
         </Grid>
         <Grid cols='12 3 2'>
-            <IconButton icon='plus' style='primary'/>
+            <IconButton icon='plus' style='primary' onClick={props.handelAdd}/>
         </Grid>
     </div>
 )
