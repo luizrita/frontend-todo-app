@@ -16,6 +16,7 @@ export default class Todo extends Component {
         this.handleRemove = this.handleRemove.bind(this)
         this.handleMarkPending = this.handleMarkPending.bind(this)
         this.handleMarkAsDone = this.handleMarkAsDone.bind(this)
+        this.handleSearch = this.handleSearch.bind(this)
         this.refresh = this.refresh.bind(this)
         this.refresh()
     }
@@ -34,23 +35,28 @@ export default class Todo extends Component {
 
     handleRemove(todo) {
         Axios.delete(`${URL}/${todo._id}`)
-            .then(() => this.refresh())
+            .then(() => this.refresh(this.state.description))
     }
 
     handleMarkPending(todo) {
         Axios.put(`${URL}/${todo._id}`, { ...todo, done: false })
-            .then(resp => this.refresh())
+            .then(resp => this.refresh(this.state.description))
     }
 
     handleMarkAsDone(todo) {
         Axios.put(`${URL}/${todo._id}`, { ...todo, done: true })
-            .then(resp => this.refresh())
+            .then(resp => this.refresh(this.state.description))
     }
 
-    refresh() {
-        Axios.get(`${URL}?sort=-createAt`)
+    handleSearch() {
+        this.refresh(this.state.description)
+    }
+
+    refresh(description = '') {
+        const search = description ? `&description__regex=/${description}/` : ''
+        Axios.get(`${URL}?sort=-createAt${search}`)
             .then(resp => {
-                this.setState({ ...this.state, description: '', list: resp.data })
+                this.setState({ ...this.state, description: description, list: resp.data })
             })
     }
 
@@ -60,6 +66,7 @@ export default class Todo extends Component {
                 <PageHeader name='Tarefas' small='Cadastro' ></PageHeader>
                 <TodoForm handleAdd={this.handleAdd}
                     handleChange={this.handleChange}
+                    handleSearch={this.handleSearch}
                     description={this.state.description} />
                 <TodoList list={this.state.list}
                     handleMarkAsDone={this.handleMarkAsDone}
